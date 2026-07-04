@@ -36,36 +36,40 @@ Route::middleware(['auth'])->group(function () {
 
     // ------------------ FITUR PRESENSI MINGGUAN ------------------
     Route::get('/presensi', function (Request $request) {
-        $students = Child::all(['id', 'name']);
-        
-        // Tangkap parameter tanggal dari frontend, default ke hari ini jika kosong
+        $students = Child::orderBy('name', 'asc')->get(['id', 'name', 'group']);
+
+        // Ambil tanggal dari query. Jika tidak ada, gunakan hari ini.
         $dateParam = $request->query('date', date('Y-m-d'));
 
-        // JIKA LOGIN SEBAGAI ADMIN: Ambil riwayat presensi yang cocok dengan tanggal terpilih
+        // Ambil bulan dari query. Jika tidak ada, ambil dari tanggal terpilih.
+        $monthParam = $request->query('month', substr($dateParam, 0, 7));
+
+        // JIKA LOGIN SEBAGAI ADMIN
         if ($request->user()->role === 'admin') {
-            $existingAttendances = Attendance::where('date', $dateParam)->get(['child_id', 'is_present', 'note']);
+            $existingAttendances = Attendance::whereDate('date', $dateParam)
+                ->get(['child_id', 'is_present', 'note']);
 
             return Inertia::render('Presence', [
                 'students' => $students,
                 'selectedDate' => $dateParam,
-                'existingAttendances' => $existingAttendances // <--- KIRIM DATA LAMA KE FRONTEND
+                'selectedMonth' => $monthParam,
+                'existingAttendances' => $existingAttendances,
             ]);
         }
 
-        // JIKA LOGIN SEBAGAI USER/ORTU
+        // JIKA LOGIN SEBAGAI USER / ORANG TUA
         return Inertia::render('UserPresence', [
             'students' => $students,
-            'historyAttendances' => Attendance::all(), 
+            'historyAttendances' => Attendance::orderBy('date', 'desc')->get(),
         ]);
     })->name('presensi');
 
-    // Proses Simpan Absensi (Hanya boleh diakses oleh Admin)
     Route::post('/presensi', function (Request $request) {
         if ($request->user()->role !== 'admin') {
             abort(403, 'Hanya admin yang dapat menyimpan data presensi.');
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'date' => ['required', 'date'],
             'attendances' => ['required', 'array'],
             'attendances.*.child_id' => ['required', 'integer', 'exists:children,id'],
@@ -73,22 +77,24 @@ Route::middleware(['auth'])->group(function () {
             'attendances.*.note' => ['nullable', 'string'],
         ]);
 
-        foreach ($request->attendances as $att) {
+        foreach ($validated['attendances'] as $attendance) {
             Attendance::updateOrCreate(
                 [
-                    'date' => $request->date,
-                    'child_id' => $att['child_id'],
+                    'date' => $validated['date'],
+                    'child_id' => $attendance['child_id'],
                 ],
                 [
-                    'is_present' => $att['is_present'],
-                    'note' => $att['note'],
+                    'is_present' => $attendance['is_present'],
+                    'note' => $attendance['note'] ?? null,
                 ]
             );
         }
 
-        return redirect()->route('presensi')->with('success', 'Data presensi berhasil disimpan.');
+        return redirect()->route('presensi', [
+            'date' => $validated['date'],
+            'month' => substr($validated['date'], 0, 7),
+        ])->with('success', 'Data presensi berhasil disimpan.');
     })->name('presensi.store');
-
 
     // ------------------ FITUR MANAJEMEN PROFIL ANAK ------------------
     

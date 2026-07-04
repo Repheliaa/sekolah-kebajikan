@@ -85,7 +85,6 @@ export default function AdminIndex({ auth, children = [] }) {
                                         ✎
                                     </Link>
 
-                                    {/* Tombol Hapus (Muncul saat hover kartu) */}
                                     <button 
                                         onClick={() => handleDelete(child.id, child.name)}
                                         className="absolute top-3 left-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#720107] text-lg shadow-md opacity-0 group-hover:opacity-100 transition duration-200 z-10 hover:bg-red-100 hover:scale-105"
@@ -93,12 +92,11 @@ export default function AdminIndex({ auth, children = [] }) {
                                     >
                                         ✕
                                     </button>
-                                    
-                                    {/* Wadah Foto Profile */}
+                                
                                     <div className="h-44 w-full overflow-hidden bg-gray-200 flex items-center justify-center">
                                         {child.photo ? (
                                             <img 
-                                                src={`${child.photo}?t=${Date.now()}`}
+                                                src={`${child.photo}`}
                                                 className="h-full w-full object-cover group-hover:scale-105 transition duration-300" 
                                                 alt={child.name}
                                                 onError={(e) => {
@@ -114,7 +112,6 @@ export default function AdminIndex({ auth, children = [] }) {
                                         )}
                                     </div>
                                     
-                                    {/* Informasi Text */}
                                     <div className="p-4 text-center flex-1 flex flex-col justify-center">
                                         <h3 className="font-black text-[#486284] text-sm uppercase truncate px-1">
                                             {child.name}
@@ -135,11 +132,9 @@ export default function AdminIndex({ auth, children = [] }) {
                         )}
                     </div>
 
-                    {/* ================= PAGINASI INTERAKTIF ADMIN (12 DATA) ================= */}
                     {totalPages > 1 && (
                         <div className="flex justify-between items-center mt-12">
                             
-                            {/* Tombol Kembali */}
                             <button 
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={activePage === 1}
@@ -148,7 +143,6 @@ export default function AdminIndex({ auth, children = [] }) {
                                 Kembali
                             </button>
                             
-                            {/* Baris Lingkaran Angka Mengikuti Jumlah Data */}
                             <div className="bg-[#FEF3D1] flex items-center space-x-2 px-4 py-1.5 rounded-full shadow-md font-bold text-[#566E91] text-sm">
                                 {pageNumbers.map((number) => (
                                     <button
@@ -165,7 +159,6 @@ export default function AdminIndex({ auth, children = [] }) {
                                 ))}
                             </div>
                             
-                            {/* Tombol Selanjutnya */}
                             <button 
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={activePage === totalPages}
@@ -176,7 +169,6 @@ export default function AdminIndex({ auth, children = [] }) {
 
                         </div>
                     )}
-                    {/* ======================================================================= */}
 
                 </div>
             </div>

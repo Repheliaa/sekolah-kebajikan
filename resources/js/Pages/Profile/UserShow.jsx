@@ -36,7 +36,7 @@ export default function UserShow({ auth, child, stats }) {
                                 <h3 className="text-[#720107] font-black text-sm uppercase mb-4 tracking-widest">Data Umum</h3>
                                 <div className="space-y-4 border-l-2 border-dashed border-gray-200 pl-4">
                                     <p className="text-sm font-bold text-[#486284]">Nama: <span className="text-gray-700 font-semibold ml-2">{child.name}</span></p>
-                                    <p className="text-sm font-bold text-[#486484]">Tempat, Tgl Lahir: <span className="text-gray-700 font-semibold ml-2">{child.pob}, {child.birth_date}</span></p>
+                                    <p className="text-sm font-bold text-[#486484]">Tempat, Tanggal Lahir: <span className="text-gray-700 font-semibold ml-2">{child.pob}, {child.birth_date}</span></p>
                                     <p className="text-sm font-bold text-[#486284]">Umur: <span className="text-gray-700 font-semibold ml-2">{child.age} Tahun</span></p>
                                     <p className="text-sm font-bold text-[#486284]">Alamat: <span className="text-gray-700 font-semibold ml-2">{child.address}</span></p>
                                 </div>
@@ -92,7 +92,7 @@ export default function UserShow({ auth, child, stats }) {
                                         <span className="text-2xl font-black text-[#FEF3D1] leading-none">{stats.persentase}</span>
                                     </div>
                                     <p className="text-[10px] italic opacity-60 mt-4 block border-t border-white/20 pt-2">
-                                        *Terisi otomatis via presensi mingguan genta rohani
+                                        *Terisi otomatis via presensi mingguan
                                     </p>
                                 </div>
                             </div>

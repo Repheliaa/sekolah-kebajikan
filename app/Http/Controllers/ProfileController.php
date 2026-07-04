@@ -53,7 +53,7 @@ class ProfileController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('public/photos');
+            $path = $request->file('photo')->store('photos', 'public');
             $validated['photo'] = Storage::url($path);
         }
 
@@ -95,7 +95,7 @@ class ProfileController extends Controller
             if ($child->photo) {
                 Storage::delete(str_replace('/storage/', 'public/', $child->photo));
             }
-            $path = $request->file('photo')->store('public/photos');
+            $path = $request->file('photo')->store('photos', 'public');
             $validated['photo'] = Storage::url($path);
         }
 
@@ -108,16 +108,17 @@ class ProfileController extends Controller
     {
         $child = Child::findOrFail($id);
 
-        // Kalkulasi otomatis statistik kehadiran anak untuk ditampilkan di banner bawah
-        $totalHadir = Attendance::where('child_id', $id)->where('is_present', true)->count();
-        $totalPertemuan = Attendance::where('child_id', $id)->count();
+        $attendances = Attendance::where('child_id', $id)->get();
+        $totalHadir = $attendances->where('is_present', true)->count();
+        $totalPertemuan = $attendances->count();
         $persentase = $totalPertemuan > 0 ? round(($totalHadir / $totalPertemuan) * 100) . '%' : '0%';
 
         return Inertia::render('Profile/UserShow', [
             'child' => $child,
             'stats' => [
                 'total_hadir' => $totalHadir,
-                'persentase' => $persentase
+                'total_pertemuan' => $totalPertemuan,
+                'persentase' => $persentase,
             ]
         ]);
     }

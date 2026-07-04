@@ -1,42 +1,110 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-// TAMBAHKAN PROPS 'selectedDate' DAN 'existingAttendances' DARI LARAVEL
-export default function Presence({ auth, students = [], selectedDate, existingAttendances = [] }) {
-    
-    // Inisialisasi useForm
+const getSundaysInMonth = (monthValue) => {
+    const [year, month] = monthValue.split('-').map(Number);
+    const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    const dates = [];
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(Date.UTC(year, month - 1, day));
+        if (date.getUTCDay() === 0) {
+            dates.push(date.toISOString().split('T')[0]);
+        }
+    }
+
+    return dates;
+};
+
+export default function Presence({ auth, students = [], selectedDate, selectedMonth, existingAttendances = [] }) {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear().toString();
+    const currentMonth = `${currentYear}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    const activeMonth = selectedMonth || currentMonth;
+    const activeYear = activeMonth.split('-')[0];
+
     const { data, setData, post, processing } = useForm({
         date: selectedDate || '',
         attendances: []
     });
 
-    // EFFECT SYNC UTAMA: Berfungsi memetakan ulang data tabel setiap kali database mengirim data presensi yang cocok
     useEffect(() => {
-        const mappedAttendances = students.map(student => {
-            // Cari apakah anak ini sudah punya rekaman absensi di tanggal terpilih
-            const existing = existingAttendances.find(att => att.child_id === student.id);
-            
+        setData('date', selectedDate || '');
+    }, [selectedDate]);
+
+    useEffect(() => {
+        const mappedAttendances = students.map((student) => {
+            const existing = existingAttendances.find((att) => att.child_id === student.id);
+
             return {
                 child_id: student.id,
-                // Jika ada gunakan data DB lama, jika tidak ada set default true (Hadir)
                 is_present: existing ? Boolean(existing.is_present) : true,
-                note: existing ? (existing.note || '') : ''
+                note: existing ? (existing.note ?? '') : ''
             };
         });
 
         setData('attendances', mappedAttendances);
     }, [existingAttendances, students]);
 
-    // Handler ketika admin mengubah tanggal kalender
+    const availableDates = useMemo(() => getSundaysInMonth(activeMonth), [activeMonth]);
+
+    const yearOptions = useMemo(() => {
+        const years = [];
+        const currentYearValue = Number(currentYear);
+
+        for (let offset = 0; offset < 5; offset += 1) {
+            const year = currentYearValue - offset;
+            years.push(year.toString());
+        }
+
+        return years;
+    }, [currentYear]);
+
+    const monthOptions = useMemo(() => {
+        const options = [];
+        const year = Number(activeYear);
+
+        for (let monthIndex = 0; monthIndex < 12; monthIndex += 1) {
+            const date = new Date(year, monthIndex, 1);
+            const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            options.push({
+                value,
+                label: date.toLocaleDateString('id-ID', { month: 'long' })
+            });
+        }
+
+        return options;
+    }, [activeYear]);
+
+    const navigateToAttendance = (newMonth, newDate) => {
+        router.visit(route('presensi'), {
+            data: {
+                month: newMonth,
+                date: newDate,
+            },
+            preserveState: false,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const handleYearChange = (newYear) => {
+        const newMonth = `${newYear}-${activeMonth.split('-')[1] || '01'}`;
+        const fallbackDate = getSundaysInMonth(newMonth)[0] || '';
+        setData('date', fallbackDate);
+        navigateToAttendance(newMonth, fallbackDate);
+    };
+
+    const handleMonthChange = (newMonth) => {
+        const fallbackDate = getSundaysInMonth(newMonth)[0] || '';
+        setData('date', fallbackDate);
+        navigateToAttendance(newMonth, fallbackDate);
+    };
+
     const handleDateChange = (newDate) => {
         setData('date', newDate);
-        
-        // Minta Laravel mengambil data presensi lama yang terdaftar pada tanggal baru ini
-        router.get(route('presensi'), { date: newDate }, {
-            preserveState: true, // Jaga state komponen agar tidak hilang
-            preserveScroll: true
-        });
+        navigateToAttendance(activeMonth, newDate);
     };
 
     const handleAttendanceChange = (index, value) => {
@@ -53,7 +121,19 @@ export default function Presence({ auth, students = [], selectedDate, existingAt
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('presensi.store')); 
+        post(route('presensi.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                 router.get(route('presensi'), {
+                month: activeMonth,
+                date: data.date,
+            }, {
+                preserveState: false,
+                preserveScroll: true,
+                replace: true,
+            });
+            }
+        });
     };
 
     return (
@@ -65,15 +145,56 @@ export default function Presence({ auth, students = [], selectedDate, existingAt
                     Presensi Anak
                 </h1>
 
-                {/* Input Tanggal */}
-                <div className="relative w-full max-w-xs mb-8">
-                    <input 
-                        type="date"
-                        value={data.date}
-                        onChange={(e) => handleDateChange(e.target.value)} // Menggunakan handler khusus baru
-                        className="w-full bg-[#FEFBF5] text-gray-500 px-6 py-3 rounded-full border-none shadow-inner font-medium text-sm text-center focus:ring-2 focus:ring-[#566E91] cursor-pointer"
-                        required
-                    />
+                <div className="w-full max-w-3xl mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-center">
+                    <div className="w-full md:w-1/3">
+                        <label className="mb-2 block text-xs font-black uppercase tracking-widest text-[#FEF3D1]">Tahun</label>
+                        <select
+                            value={activeYear}
+                            onChange={(e) => handleYearChange(e.target.value)}
+                            className="w-full rounded-full border-none bg-[#FEFBF5] px-4 py-3 text-sm font-medium text-gray-600 shadow-inner focus:ring-2 focus:ring-[#566E91]"
+                        >
+                            {yearOptions.map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="w-full md:w-1/3">
+                        <label className="mb-2 block text-xs font-black uppercase tracking-widest text-[#FEF3D1]">Bulan</label>
+                        <select
+                            value={activeMonth}
+                            onChange={(e) => handleMonthChange(e.target.value)}
+                            className="w-full rounded-full border-none bg-[#FEFBF5] px-4 py-3 text-sm font-medium text-gray-600 shadow-inner focus:ring-2 focus:ring-[#566E91]"
+                        >
+                            {monthOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="w-full md:w-1/3">
+                        <label className="mb-2 block text-xs font-black uppercase tracking-widest text-[#FEF3D1]">Tanggal Minggu</label>
+                        <select
+                            value={data.date || ''}
+                            onChange={(e) => handleDateChange(e.target.value)}
+                            className="w-full rounded-full border-none bg-[#FEFBF5] px-4 py-3 text-sm font-medium text-gray-600 shadow-inner focus:ring-2 focus:ring-[#566E91]"
+                            required
+                        >
+                            {availableDates.length > 0 ? (
+                                availableDates.map((date) => (
+                                    <option key={date} value={date}>
+                                        {new Date(`${date}T00:00:00`).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })}
+                                    </option>
+                                ))
+                            ) : (
+                                <option value="">Belum ada tanggal minggu</option>
+                            )}
+                        </select>
+                    </div>
                 </div>
 
                 {/* Tabel Render */}

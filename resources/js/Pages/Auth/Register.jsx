@@ -4,7 +4,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 export default function Register() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
-        email: '',
+        username: '',
         password: '',
         password_confirmation: '',
     });
@@ -23,7 +23,6 @@ export default function Register() {
                     <h1 className="text-3xl font-black text-[#486284] tracking-tighter">Daftar Akun</h1>
                     <p className="text-[#486284] text-sm mt-2 font-medium">Daftarkan diri untuk dapat mengakses</p>
                 </div>
-
                 <form onSubmit={submit} className="space-y-4">
                     <div>
                         <label className="block text-xs font-bold text-[#566E91] uppercase mb-1 ml-1">Nama Lengkap</label>
@@ -32,17 +31,25 @@ export default function Register() {
                             className="w-full px-4 py-3 rounded-xl bg-[#486284]-50 border-transparent focus:border-[#566E91] focus:bg-white focus:ring-0 text-sm transition"
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
+                            placeholder="Contoh: Budi Setiawan"
+                            autoComplete="name"
+                            required
                         />
+                        {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-[#566E91] uppercase mb-1 ml-1">Email</label>
+                        <label className="block text-xs font-bold text-[#566E91] uppercase mb-1 ml-1">Username</label>
                         <input
-                            type="email"
+                            type="text"
                             className="w-full px-4 py-3 rounded-xl bg-[#486284]-50 border-transparent focus:border-[#566E91] focus:bg-white focus:ring-0 text-sm transition"
-                            value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
+                            value={data.username}
+                            onChange={(e) => setData('username', e.target.value)}
+                            placeholder="Buat username unik"
+                            autoComplete="username"
+                            required
                         />
+                        {errors.username && <p className="mt-1 text-xs text-red-600">{errors.username}</p>}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -53,7 +60,11 @@ export default function Register() {
                                 className="w-full px-4 py-3 rounded-xl bg-[#486284]-50 border-transparent focus:border-[#566E91] focus:bg-white focus:ring-0 text-sm transition"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
+                                placeholder="Minimal 8 karakter"
+                                autoComplete="new-password"
+                                required
                             />
+                            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-[#566E91] uppercase mb-1 ml-1">Konfirmasi</label>
@@ -62,6 +73,9 @@ export default function Register() {
                                 className="w-full px-4 py-3 rounded-xl bg-[#486284]-50 border-transparent focus:border-[#566E91] focus:bg-white focus:ring-0 text-sm transition"
                                 value={data.password_confirmation}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
+                                placeholder="Ulangi password"
+                                autoComplete="new-password"
+                                required
                             />
                         </div>
                     </div>
@@ -69,7 +83,8 @@ export default function Register() {
                     <button
                         type="submit"
                         disabled={processing}
-                        className="px-8 py-2 bg-[#F8C8C8] hover:bg-[#f2b3b3] text-[#720107] font-black rounded-full shadow-md transition duration-200 transform active:scale-95 uppercase tracking-widest text-xs mx-auto block">
+                        className="px-8 py-2 bg-[#F8C8C8] hover:bg-[#f2b3b3] text-[#720107] font-black rounded-full shadow-md transition duration-200 transform active:scale-95 uppercase tracking-widest text-xs mx-auto block"
+                    >
                         Daftar Akun
                     </button>
                 </form>

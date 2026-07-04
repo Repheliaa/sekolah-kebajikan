@@ -30,23 +30,26 @@ export default function Welcome({ auth, nextWeekMaterial }) {
                     MAKIN SEMANGAT GENTA ROHANI<br />
                     "SEGAR"
                 </h1>
-                <p className="mt-6 text-[#566E91] font-bold text-lg">
-                    Sistem Informasi Pemantauan Perkembangan Anak
+                <p className="mt-6 max-w-2xl mx-auto text-[#566E91] text-sm md:text-base leading-7 font-small">
+                    platform berbasis web yang memfasilitasi pengelolaan data anak, pencatatan kehadiran, pemantauan perkembangan, serta penyampaian informasi kepada orang tua secara terintegrasi
                 </p>
             </section>
 
             {isLoggedIn && (
             <section className="bg-[#FEF3D1] w-full pb-12 px-6 animate-fade-in">
-                    <div className="max-w-4xl mx-auto">
+                    <div className="max-w-2xl mx-auto">
                         <div className="bg-[#FEFBF5] border-2 border-[#566E91] p-6 md:p-8 rounded-[2.5rem] shadow-xl text-center">
                             <span className="bg-[#566E91] text-white px-5 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm">
-                                Fokus Belajar Hari Minggu Besok
+                                Materi Belajar Minggu Depan
                             </span>
                             <p className="mt-6 text-[#486284] text-lg md:text-xl font-black italic leading-relaxed px-2">
                                 "{nextWeekMaterial || 'Belum ada fokus pembelajaran minggu ini.'}"
                             </p>
-                            <div className="mt-4 text-[11px] text-gray-400 font-bold uppercase tracking-wider">
-                                📌 Dipublikasikan oleh Pengajar Genta Rohani
+                            <div className="mt-5 flex justify-center">
+                                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#FEF3D1] px-2.5 py-1 text-[10px] font-semibold text-[#486284] border border-[#566E91]/20 shadow-sm">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#720107]"></span>
+                                    Diperbarui oleh Pengajar
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -89,52 +92,62 @@ export default function Welcome({ auth, nextWeekMaterial }) {
             </section>
 
             {/* Gallery Section */}
-            <section className="bg-[#7A0000] py-20">
-                <div className="max-w-6xl mx-auto px-6">
-                    <h2 className="text-[#FDF1D7] text-3xl font-black text-center mb-10 uppercase tracking-widest">
-                        Galeri Kegiatan
-                    </h2>
+            <section className="relative bg-[#7A0000] py-24 overflow-hidden">
+                <div className="absolute inset-0"></div>
+
+                <div className="relative max-w-6xl mx-auto px-6">
+                    <div className="text-center mb-12">
+                        <p className="text-[#F7CBCA] text-xs font-black uppercase tracking-[0.35em] mb-3">
+                            Dokumentasi
+                        </p>
+                        <h2 className="text-[#FDF1D7] text-3xl md:text-5xl font-black uppercase tracking-tight">
+                            Galeri Kegiatan
+                        </h2>
+                        <p className="text-[#FDF1D7]/75 text-sm md:text-base font-semibold mt-4 max-w-2xl mx-auto">
+                            Momen kebersamaan, pembelajaran, dan aktivitas anak-anak di Sekolah Kebajikan Genta Rohani.
+                        </p>
+                    </div>
 
                     <Swiper
                         modules={[Navigation, Pagination, Autoplay]}
-                        spaceBetween={20}
+                        spaceBetween={28}
                         slidesPerView={1}
                         navigation
                         pagination={{ clickable: true }}
-                        autoplay={{ delay: 3000 }}
+                        autoplay={{ delay: 3200, disableOnInteraction: false }}
+                        loop={true}
                         breakpoints={{
                             640: { slidesPerView: 2 },
                             1024: { slidesPerView: 3 },
                         }}
-                        className="pb-12"
+                        className="gallery-swiper pb-14"
                     >
-                        {/* Slide 1 */}
-                        <SwiperSlide>
-                            <div className="rounded-2xl overflow-hidden shadow-2xl h-80">
-                                <img src="/images/image1.jpg" className="w-full h-full object-cover rounded-xl" alt="Foto 1" />
-                            </div>
-                        </SwiperSlide>
+                        {[
+                            ['/images/image1.jpg', 'Belajar Lagu "Terima Kasih Tuhan"'],
+                            ['/images/image2.jpeg', 'Pembelajaran: Bahasa Mandarin'],
+                            ['/images/image3.jpeg', 'Merakit Lampion'],
+                            ['/images/image4.jpeg', 'Lomba Juara Teladan 2025'],
+                            ['/images/image5.jpeg', 'Membaca Buku Cerita'],
+                            ['/images/image6.jpeg', 'Kebaktian Bersama'],
+                        ].map(([src, alt], index) => (
+                            <SwiperSlide key={index}>
+                                <div className="group relative h-80 rounded-[2rem] overflow-hidden shadow-xl border border-[#FDF1D7]/20 bg-[#FDF1D7]">
+                                    <img
+                                        src={src}
+                                        className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
+                                        alt={alt}
+                                    />
 
-                        {/* Slide 2 */}
-                        <SwiperSlide>
-                            <div className="rounded-2xl overflow-hidden shadow-2xl h-80">
-                                <img src="/images/image2.jpg" className="w-full h-full object-cover rounded-xl" alt="Foto 2" />
-                            </div>
-                        </SwiperSlide>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#720107]/85 via-[#720107]/20 to-transparent"></div>
 
-                        {/* Slide 3 */}
-                        <SwiperSlide>
-                            <div className="rounded-2xl overflow-hidden shadow-2xl h-80">
-                                <img src="/images/image3.jpg" className="w-full h-full object-cover rounded-xl" alt="Foto 3" />
-                            </div>
-                        </SwiperSlide>
-
-                        {/* Slide 4 */}
-                        <SwiperSlide>
-                            <div className="rounded-2xl overflow-hidden shadow-2xl h-80">
-                                <img src="/images/image4.jpg" className="w-full h-full object-cover rounded-xl" alt="Foto 4" />
-                            </div>
-                        </SwiperSlide>
+                                    <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 group-hover:translate-y-0 transition duration-300">
+                                        <h3 className="text-white text-sm md:text-base font-bold leading-relaxed">
+                                            {alt}
+                                        </h3>
+                                    </div>
+                                </div>
+                            </SwiperSlide>
+                        ))}
                     </Swiper>
                 </div>
             </section>

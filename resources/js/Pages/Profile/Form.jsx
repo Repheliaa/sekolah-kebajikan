@@ -149,7 +149,7 @@ export default function Form({ auth, child }) {
                                     />
                                     <div className="flex flex-col md:flex-row gap-4">
                                         <div className="flex-1 flex items-center gap-4">
-                                            <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Tempat, Tgl Lahir :</label>
+                                            <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Tempat, Tanggal Lahir :</label>
                                             <input 
                                                 type="text" 
                                                 placeholder="Tempat" 
