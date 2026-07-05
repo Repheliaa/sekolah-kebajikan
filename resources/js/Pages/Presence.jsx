@@ -17,7 +17,7 @@ const getSundaysInMonth = (monthValue) => {
     return dates;
 };
 
-export default function Presence({ auth, students = [], selectedDate, selectedMonth, existingAttendances = [] }) {
+export default function Presence({ auth, students = [], selectedDate, selectedMonth, existingAttendances = [], learningMaterial }) {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear().toString();
     const currentMonth = `${currentYear}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
@@ -124,16 +124,24 @@ export default function Presence({ auth, students = [], selectedDate, selectedMo
         post(route('presensi.store'), {
             preserveScroll: true,
             onSuccess: () => {
-                 router.get(route('presensi'), {
-                month: activeMonth,
-                date: data.date,
-            }, {
-                preserveState: false,
-                preserveScroll: true,
-                replace: true,
-            });
+                router.get(route('presensi'), {
+                    month: activeMonth,
+                    date: data.date,
+                }, {
+                    preserveState: false,
+                    preserveScroll: true,
+                    replace: true,
+                });
             }
         });
+    };
+
+    const handleDelete = () => {
+        if (confirm('Apakah Anda yakin ingin menghapus seluruh data presensi pada tanggal ini secara permanen?')) {
+            router.delete(route('presensi.destroy', data.date), {
+                preserveScroll: true,
+            });
+        }
     };
 
     return (
@@ -197,6 +205,23 @@ export default function Presence({ auth, students = [], selectedDate, selectedMo
                     </div>
                 </div>
 
+                {/* Info Materi Pembelajaran */}
+                <div className="w-full max-w-4xl mb-6">
+                    <div className="bg-[#FEFBF5] p-5 rounded-2xl border border-gray-100 shadow-md flex gap-4 items-start">
+                        <div className="bg-[#F8C8C8] p-3 rounded-full text-[#720107]">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-[#720107] mb-1">Materi Pembelajaran ({new Date(data.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })})</h3>
+                            <p className="text-sm font-medium text-gray-700 italic">
+                                {learningMaterial ? `"${learningMaterial}"` : 'Belum ada materi pembelajaran yang diinput pada tanggal ini.'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Tabel Render */}
                 <div className="w-full max-w-4xl bg-[#FEFBF5] overflow-hidden p-1 border border-gray-100 shadow-xl">
                     <table className="w-full text-left border-collapse">
@@ -220,16 +245,15 @@ export default function Presence({ auth, students = [], selectedDate, selectedMo
                                                 <button
                                                     type="button"
                                                     onClick={() => handleAttendanceChange(index, !attendance.is_present)}
-                                                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all focus:outline-none ${
-                                                        attendance.is_present ? 'border-[#566E91] bg-[#566E91]' : 'border-gray-400 bg-transparent'
-                                                    }`}
+                                                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all focus:outline-none ${attendance.is_present ? 'border-[#566E91] bg-[#566E91]' : 'border-gray-400 bg-transparent'
+                                                        }`}
                                                 >
                                                     {attendance.is_present && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
                                                 </button>
                                             </div>
                                         </td>
                                         <td className="py-2 px-6">
-                                            <input 
+                                            <input
                                                 type="text"
                                                 placeholder={attendance.is_present ? "Tulis capaian perkembangan..." : "Sakit / Izin"}
                                                 value={attendance.note}
@@ -244,7 +268,17 @@ export default function Presence({ auth, students = [], selectedDate, selectedMo
                     </table>
                 </div>
 
-                <div className="w-full max-w-4xl flex justify-end mt-8">
+                <div className="w-full max-w-4xl flex justify-end gap-4 mt-8">
+                    {existingAttendances && existingAttendances.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            disabled={processing}
+                            className="py-3 px-6 border-2 border-[#FEF3D1] text-[#FEF3D1] font-black text-sm rounded-full hover:bg-[#FEF3D1] hover:text-[#7A0000] transition-all uppercase tracking-wider disabled:opacity-50"
+                        >
+                            Hapus Presensi
+                        </button>
+                    )}
                     <button
                         onClick={handleSubmit}
                         disabled={processing}

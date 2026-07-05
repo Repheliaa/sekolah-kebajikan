@@ -14,16 +14,30 @@ export default function Dashboard({
     selectedDateStats = {},
     selectedMonthStats = {},
     selectedYearStats = {},
-    topChildren = []
+    topChildren = [],
+    learningMaterials = {},
+    sundays = []
 }) {
     const [statMonth, setStatMonth] = useState(selectedMonth || new Date().toISOString().slice(0, 7));
     const [statYear, setStatYear] = useState(selectedYear || new Date().getFullYear().toString());
     const [selectedWeekIndex, setSelectedWeekIndex] = useState(-1);
 
     // 1. FORM STATE UNTUK INPUT MATERI
+    const initialMaterials = sundays.map(date => ({
+        date,
+        content: learningMaterials[date]?.content || ''
+    }));
+
     const { data, setData, post, processing, wasSuccessful } = useForm({
-        next_week_material: stats?.next_week_material || ''
+        materials: initialMaterials
     });
+
+    useEffect(() => {
+        setData('materials', sundays.map(date => ({
+            date,
+            content: learningMaterials[date]?.content || ''
+        })));
+    }, [sundays, learningMaterials]);
 
     const handleMaterialSubmit = (e) => {
         e.preventDefault();
@@ -59,9 +73,9 @@ export default function Dashboard({
     const maxYearlyAttendance = Math.max(...yearlyChart.map(d => Math.max(d.Hadir, d.Absen)), 10);
 
     const categoryBreakdown = [
-        { label: 'Kelompok A', value: stats?.kelompok_a ?? 0, color: '#2d4e80' },
-        { label: 'Kelompok B', value: stats?.kelompok_b ?? 0, color: '#486284' },
-        { label: 'Kelompok C', value: stats?.kelompok_c ?? 0, color: '#F8C8C8' },
+        { label: 'Kelompok A', value: stats?.kelompok_a ?? 0, color: '#FEF3D1' }, // Krem
+        { label: 'Kelompok B', value: stats?.kelompok_b ?? 0, color: '#F8C8C8' }, // Pink Lembut
+        { label: 'Kelompok C', value: stats?.kelompok_c ?? 0, color: '#720107' }, // Merah Gelap
     ];
 
     const totalCategoryChildren = categoryBreakdown.reduce((sum, item) => sum + item.value, 0);
@@ -131,20 +145,14 @@ export default function Dashboard({
 
                 {/* Konten Utama */}
                 <div className="p-6 md:p-12 max-w-7xl mx-auto relative z-10 -mt-10 print:mt-0 print:p-4">
-                    
+
                     {/* Ringkasan Header status */}
-                    <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#FEFBF5] p-6 rounded-3xl border border-gray-200 print:border-none">
+                    <div className="mt-4 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#FEFBF5] p-6 rounded-3xl border border-gray-200 print:hidden">
                         <div>
                             <h2 className="text-[#486284] font-black text-xl uppercase tracking-tight">Dashboard Admin</h2>
                             <p className="text-[#486284] font-bold text-xs italic opacity-80 mt-0.5">Sistem Pemantauan Perkembangan Siswa Genta Rohani</p>
                         </div>
                         <div className="flex items-center gap-3 print:hidden">
-                            <button 
-                                onClick={handlePrintReport}
-                                className="bg-[#486284] text-white px-5 py-2 rounded-full text-xs font-black uppercase shadow-sm hover:bg-[#566E91] transition"
-                            >
-                                Cetak Laporan Bulanan
-                            </button>
                             <span className="bg-[#566E91] text-white px-4 py-2 rounded-full text-xs font-black uppercase shadow-sm">
                                 Role: Admin
                             </span>
@@ -182,8 +190,8 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-8 print:grid-cols-4">
-                        <div className="lg:col-span-2 bg-[#566E91] p-6 rounded-[2rem] text-white shadow-md print:border print:text-black print:bg-transparent">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-8 print:hidden">
+                        <div className="lg:col-span-2 bg-[#566E91] p-6 rounded-[2rem] text-white shadow-md">
                             <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
                                 <div className="flex-1">
                                     <p className="text-xs font-black uppercase opacity-80">Jumlah Anak</p>
@@ -191,7 +199,10 @@ export default function Dashboard({
                                     <div className="mt-4 space-y-2">
                                         {categoryBreakdown.map((item) => (
                                             <div key={item.label} className="flex items-center justify-between rounded-2xl bg-white/10 px-3 py-2 text-sm">
-                                                <span>{item.label}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                                                    <span>{item.label}</span>
+                                                </div>
                                                 <span className="font-black">{item.value}</span>
                                             </div>
                                         ))}
@@ -219,7 +230,7 @@ export default function Dashboard({
                             </div>
                         </div>
 
-                        <div className="bg-[#720107] p-6 rounded-[2rem] text-white shadow-md print:border print:text-black print:bg-transparent">
+                        <div className="bg-[#720107] p-6 rounded-[2rem] text-white shadow-md">
                             <p className="text-xs font-black uppercase opacity-80">Kehadiran Minggu Ini</p>
                             <div className="mt-2">
                                 <label className="text-[10px] font-black uppercase tracking-wider opacity-70">Pilih Minggu</label>
@@ -240,7 +251,7 @@ export default function Dashboard({
                             <p className="text-xs opacity-70 mt-1">{currentWeekSummary.Absen} Absen</p>
                             <p className="text-xs opacity-80 mt-2 font-black">Persentase : {currentWeekPercentage}%</p>
                         </div>
-                        <div className="bg-[#486284] p-6 rounded-[2rem] text-white shadow-md print:border print:text-black print:bg-transparent">
+                        <div className="bg-[#486284] p-6 rounded-[2rem] text-white shadow-md">
                             <p className="text-xs font-black uppercase opacity-80">Kehadiran Bulan Ini</p>
                             <p className="text-3xl font-black mt-2">{monthlySummary.hadir} Hadir</p>
                             <p className="text-xs opacity-70 mt-1">{monthlySummary.absen} Absen</p>
@@ -322,63 +333,108 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 print:hidden">
-                        <div className="lg:col-span-2 bg-[#FEFBF5] p-6 md:p-8 rounded-[2.5rem] border border-gray-200">
-                            <div className="mb-4 flex items-start justify-between gap-4">
+                    <div className="max-w-4xl mx-auto mt-8 print:hidden">
+                        <div className="bg-[#FEFBF5] p-6 rounded-[2.5rem] border border-gray-200 mb-8">
+                            <div className="mb-4 flex items-center justify-between gap-4">
                                 <div>
-                                    <h3 className="text-[#720107] font-black text-base uppercase tracking-tight">Fokus Pembelajaran</h3>
-                                    <p className="text-xs text-gray-400 font-bold italic mt-0.5">Input materi pembelajaran genta rohani minggu depan</p>
+                                    <h3 className="text-[#720107] font-black text-sm uppercase tracking-tight">Fokus Pembelajaran Bulan Ini</h3>
                                 </div>
-                                <span className="rounded-full bg-[#F8C8C8] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#720107]">Minggu Depan</span>
-                            </div>
-
-                            <div className="rounded-2xl border border-[#F8C8C8] bg-[#FFF7EA] p-4 mb-4">
-                                <p className="text-[11px] font-black uppercase tracking-wider text-[#720107]">Materi saat ini</p>
-                                <p className="mt-2 text-sm text-gray-700">{stats?.next_week_material || 'Belum ada materi pembelajaran yang dipublikasikan.'}</p>
+                                <span className="rounded-full bg-[#F8C8C8] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#720107]">{currentMonthName}</span>
                             </div>
 
                             <form onSubmit={handleMaterialSubmit} className="space-y-4">
-                                <textarea rows="4" placeholder="Tulis tema atau fokus kebajikan di sini..." value={data.next_week_material} onChange={(e) => setData('next_week_material', e.target.value)} className="w-full bg-[#FEFBF5] border border-gray-200 rounded-2xl shadow-inner p-4 text-sm font-semibold text-gray-700 focus:ring-2 focus:ring-[#566E91] focus:border-transparent transition-all" required></textarea>
-                                {wasSuccessful && <p className="text-emerald-600 font-bold text-xs bg-emerald-50 py-2 px-3 rounded-xl border border-emerald-100 text-center animate-bounce">✓ Materi sukses di-publish ke halaman utama!</p>}
-                                <button type="submit" disabled={processing} className="w-full py-3.5 bg-[#F8C8C8] text-[#720107] font-black text-xs rounded-2xl hover:bg-[#f2b3b3] transition-all uppercase tracking-widest shadow-sm disabled:opacity-50">{processing ? 'Menyimpan...' : 'Publish Materi'}</button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {data.materials && data.materials.map((mat, idx) => (
+                                        <div key={mat.date} className="rounded-2xl border border-gray-200 bg-white p-3">
+                                            <label className="block text-[10px] font-black uppercase tracking-wider text-[#720107] mb-1.5">
+                                                Minggu {idx + 1} ({new Date(mat.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })})
+                                            </label>
+                                            <textarea
+                                                rows="2"
+                                                placeholder="Tulis tema..."
+                                                value={mat.content}
+                                                onChange={(e) => {
+                                                    const newMaterials = [...data.materials];
+                                                    newMaterials[idx].content = e.target.value;
+                                                    setData('materials', newMaterials);
+                                                }}
+                                                className="w-full bg-[#FEFBF5] border border-gray-200 rounded-xl shadow-inner p-2.5 text-xs font-semibold text-gray-700 focus:ring-2 focus:ring-[#566E91] focus:border-transparent transition-all resize-none"
+                                            ></textarea>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {wasSuccessful && <p className="text-emerald-600 font-bold text-[10px] bg-emerald-50 py-1.5 px-3 rounded-xl border border-emerald-100 text-center animate-bounce">✓ Materi sukses disimpan!</p>}
+                                <button type="submit" disabled={processing} className="w-full py-2.5 bg-[#F8C8C8] text-[#720107] font-black text-[10px] rounded-xl hover:bg-[#f2b3b3] transition-all uppercase tracking-widest shadow-sm disabled:opacity-50">{processing ? 'Menyimpan...' : 'Simpan Materi'}</button>
                             </form>
                         </div>
-                        <div className="bg-[#FEFBF5] p-6 md:p-8 rounded-[2.5rem] border border-gray-200 flex flex-col justify-center gap-3">
-                            <p className="text-xs font-black uppercase tracking-wider text-[#486284]">Aksi Cepat</p>
-                            <button onClick={handlePrintReport} className="w-full py-4 bg-[#486284] text-white font-black text-xs rounded-2xl hover:bg-[#566E91] transition-all uppercase tracking-widest shadow-sm print:hidden">Cetak Laporan</button>
-                            <div className="rounded-2xl border border-gray-200 bg-white p-4 text-sm text-gray-600">
-                                <p className="font-black text-[#720107] uppercase text-[10px]">Catatan</p>
-                                <p className="mt-1">Data pada dashboard mengikuti bulan dan tahun yang dipilih.</p>
-                            </div>
+
+                        <div className="flex justify-center">
+                            <button onClick={handlePrintReport} className="bg-[#486284] text-white py-4 px-10 font-black text-xs rounded-full hover:bg-[#566E91] transition-all uppercase tracking-widest shadow-md flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clipRule="evenodd" />
+                                </svg>
+                                Cetak Laporan Bulanan
+                            </button>
                         </div>
                     </div>
 
                     {/* AREA HALAMAN LAPORAN YANG AKAN DICETAK (Hidden di web, muncul saat print) */}
-                    <div className="hidden print:block mt-8 bg-white p-4">
-                        <h2 className="text-center text-xl font-black uppercase text-black">LAPORAN REKAPITULASI KEHADIRAN SISWA</h2>
-                        <p className="text-center text-xs font-bold uppercase text-gray-600 mt-1">Periode Bulan: {currentMonthName}</p>
-                        <table className="w-full mt-6 border-collapse border border-black text-sm">
+                    <div className="hidden print:block mt-8 bg-white p-6">
+                        <div className="border-b-2 border-black pb-4 mb-6">
+                            <h2 className="text-center text-2xl font-black uppercase text-black tracking-tight">Laporan Rekapitulasi Kehadiran Siswa</h2>
+                            <h3 className="text-center text-lg font-bold uppercase text-black mt-1">Sekolah Kebajikan Genta Rohani</h3>
+                            <p className="text-center text-sm font-semibold text-black mt-1">Periode Bulan: {currentMonthName}</p>
+                        </div>
+                        
+                        <div className="flex justify-between mb-6 text-sm font-bold text-black">
+                            <div>
+                                <p>Total Siswa Aktif: {stats?.total_anak || 0} Anak</p>
+                                <p>Rincian: Kel. A ({stats?.kelompok_a || 0}), Kel. B ({stats?.kelompok_b || 0}), Kel. C ({stats?.kelompok_c || 0})</p>
+                            </div>
+                            <div className="text-right">
+                                <p>Total Kehadiran Bulan Ini: {selectedMonthStats?.hadir || 0} Hadir / {selectedMonthStats?.absen || 0} Absen</p>
+                                <p>Rata-rata Partisipasi: {((selectedMonthStats?.hadir || 0) / (((selectedMonthStats?.hadir || 0) + (selectedMonthStats?.absen || 0)) || 1) * 100).toFixed(1)}%</p>
+                            </div>
+                        </div>
+
+                        <table className="w-full border-collapse border border-black text-sm">
                             <thead>
-                                <tr className="bg-gray-100 text-black font-bold">
-                                    <th className="border border-black py-2 px-3 text-center">No</th>
-                                    <th className="border border-black py-2 px-4">Nama Siswa</th>
-                                    <th className="border border-black py-2 px-3 text-center">Kelompok</th>
-                                    <th className="border border-black py-2 px-3 text-center">Total Hadir</th>
-                                    <th className="border border-black py-2 px-3 text-center">Total Absen</th>
+                                <tr className="text-black font-bold bg-gray-100">
+                                    <th className="border border-black py-2 px-2 text-center w-10">No</th>
+                                    <th className="border border-black py-2 px-3 text-left">Nama Siswa</th>
+                                    <th className="border border-black py-2 px-2 text-center">Klp</th>
+                                    <th className="border border-black py-2 px-2 text-center w-20">Hadir</th>
+                                    <th className="border border-black py-2 px-2 text-center w-20">Absen</th>
+                                    <th className="border border-black py-2 px-2 text-center w-24">Persentase</th>
+                                    <th className="border border-black py-2 px-3 text-left">Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {reportData.map((row, idx) => (
-                                    <tr key={idx} className="text-black">
-                                        <td className="border border-black py-2 px-3 text-center">{idx + 1}</td>
-                                        <td className="border border-black py-2 px-4 uppercase">{row.name}</td>
-                                        <td className="border border-black py-2 px-3 text-center">{row.group || '-'}</td>
-                                        <td className="border border-black py-2 px-3 text-center font-bold text-green-700">{row.hadir} Kali</td>
-                                        <td className="border border-black py-2 px-3 text-center font-bold text-red-700">{row.absen} Kali</td>
-                                    </tr>
-                                ))}
+                                {reportData.map((row, idx) => {
+                                    const totalPertemuan = row.hadir + row.absen;
+                                    const persentase = totalPertemuan > 0 ? ((row.hadir / totalPertemuan) * 100).toFixed(0) + '%' : '-';
+                                    return (
+                                        <tr key={idx} className="text-black">
+                                            <td className="border border-black py-1.5 px-2 text-center">{idx + 1}</td>
+                                            <td className="border border-black py-1.5 px-3 uppercase text-xs font-semibold">{row.name}</td>
+                                            <td className="border border-black py-1.5 px-2 text-center">{row.group || '-'}</td>
+                                            <td className="border border-black py-1.5 px-2 text-center">{row.hadir}</td>
+                                            <td className="border border-black py-1.5 px-2 text-center">{row.absen}</td>
+                                            <td className="border border-black py-1.5 px-2 text-center">{persentase}</td>
+                                            <td className="border border-black py-1.5 px-3"></td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
+                        
+                        <div className="mt-12 flex justify-end">
+                            <div className="text-center text-black">
+                                <p className="text-sm mb-16">Mengetahui, <br/>Pengajar / Wali Kelas</p>
+                                <p className="text-sm font-bold underline">(.......................................)</p>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

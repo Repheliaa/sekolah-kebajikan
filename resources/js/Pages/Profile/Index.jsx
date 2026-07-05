@@ -15,13 +15,13 @@ export default function ProfileIndex({ auth, students = [] }) {
 
     // 3. LOGIKA MATEMATIKA PAGINATION (Menggunakan hasil filter agar sinkron)
     const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
-    
+
     // Pastikan halaman aktif tidak ngaco jika user mencari nama saat berada di page besar
     const activePage = currentPage > totalPages ? 1 : currentPage;
 
     const indexOfLastItem = activePage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    
+
     // Potong data hasil filter untuk halaman aktif saat ini
     const currentStudents = filteredStudents.slice(indexOfFirstItem, indexOfLastItem);
 
@@ -34,7 +34,7 @@ export default function ProfileIndex({ auth, students = [] }) {
     // Handler pencarian agar mereset halaman kembali ke 1 saat mengetik
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
-        setCurrentPage(1); 
+        setCurrentPage(1);
     };
 
     return (
@@ -44,12 +44,12 @@ export default function ProfileIndex({ auth, students = [] }) {
             <div className="min-h-screen bg-[#7A0000]">
                 {/* Konten Utama */}
                 <div className="max-w-6xl mx-auto px-6 py-12">
-                    
+
                     {/* Search Bar Minimalis & Interaktif */}
                     <div className="relative max-w-2xl mx-auto mb-12">
-                        <input 
-                            type="text" 
-                            placeholder="Cari nama anak..." 
+                        <input
+                            type="text"
+                            placeholder="Cari nama anak..."
                             value={searchTerm}
                             onChange={handleSearchChange}
                             className="w-full py-4 px-6 pr-12 rounded-full border-none focus:ring-2 focus:ring-[#566E91] text-gray-600 italic shadow-inner bg-[#FEFBF5]"
@@ -65,17 +65,17 @@ export default function ProfileIndex({ auth, students = [] }) {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {currentStudents.length > 0 ? (
                             currentStudents.map((student) => (
-                                <Link 
-                                    key={student.id} 
-                                    href={`/profile/${student.id}`} 
+                                <Link
+                                    key={student.id}
+                                    href={`/profile/${student.id}`}
                                     className="bg-[#FEF3D1] rounded-[2rem] overflow-hidden shadow-xl transition transform hover:scale-105 group border border-gray-100 flex flex-col justify-between"
                                 >
                                     {/* Wadah Foto */}
                                     <div className="h-48 overflow-hidden bg-gray-200 flex items-center justify-center">
                                         {student.photo ? (
-                                            <img 
+                                            <img
                                                 src={`${student.photo}?t=${Date.now()}`}
-                                                alt={student.name} 
+                                                alt={student.name}
                                                 className="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 transition duration-300"
                                                 onError={(e) => {
                                                     e.target.src = '/images/default-child.jpg';
@@ -89,7 +89,7 @@ export default function ProfileIndex({ auth, students = [] }) {
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                     {/* Informasi Singkat */}
                                     <div className="p-4 text-center flex-1 flex flex-col justify-center">
                                         <h3 className="font-black text-[#486284] text-sm md:text-base leading-tight uppercase tracking-tight truncate px-1">
@@ -113,9 +113,9 @@ export default function ProfileIndex({ auth, students = [] }) {
                     {/* ================= PAGINASI INTERAKTIF 12 DATA ================= */}
                     {totalPages > 1 && (
                         <div className="mt-16 flex justify-between items-center">
-                            
+
                             {/* Tombol Kembali */}
-                            <button 
+                            <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={activePage === 1}
                                 className="bg-[#FEF3D1] text-[#720107] px-8 py-3 rounded-full font-black text-sm uppercase shadow-md hover:bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#FEF3D1]"
@@ -129,11 +129,10 @@ export default function ProfileIndex({ auth, students = [] }) {
                                     <button
                                         key={number}
                                         onClick={() => setCurrentPage(number)}
-                                        className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${
-                                            activePage === number 
-                                                ? 'bg-[#566E91] text-white shadow-sm font-black scale-105' 
+                                        className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 ${activePage === number
+                                                ? 'bg-[#566E91] text-white shadow-sm font-black scale-105'
                                                 : 'text-[#566E91] hover:bg-black/5 hover:text-black'
-                                        }`}
+                                            }`}
                                     >
                                         {number}
                                     </button>
@@ -141,7 +140,7 @@ export default function ProfileIndex({ auth, students = [] }) {
                             </div>
 
                             {/* Tombol Selanjutnya */}
-                            <button 
+                            <button
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={activePage === totalPages}
                                 className="bg-[#FEF3D1] text-[#720107] px-8 py-3 rounded-full font-black text-sm uppercase shadow-md hover:bg-white transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#FEF3D1]"

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Head, useForm, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
-export default function Form({ auth, child }) {
+export default function Form({ auth, child, stats }) {
     const [photoPreview, setPhotoPreview] = useState(child?.photo || null);
     const { data, setData, post, put, processing, errors } = useForm({
         name: child?.name || '',
@@ -66,7 +66,7 @@ export default function Form({ auth, child }) {
     const submit = (e) => {
         e.preventDefault();
         if (child) {
-            put(route('admin.profile.update', child.id), {
+            post(route('admin.profile.update', child.id), {
                 forceFormData: true,
                 onSuccess: () => {
                     router.visit(route('admin.profile.index'), {
@@ -76,6 +76,7 @@ export default function Form({ auth, child }) {
             });
         } else {
             post(route('admin.profile.store'), {
+                forceFormData: true,
                 onSuccess: () => {
                     router.visit(route('admin.profile.index'), {
                         preserveScroll: true,
@@ -148,32 +149,38 @@ export default function Form({ auth, child }) {
                                         error={errors.name}
                                     />
                                     <div className="flex flex-col md:flex-row gap-4">
-                                        <div className="flex-1 flex items-center gap-4">
-                                            <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Tempat, Tanggal Lahir :</label>
-                                            <input 
-                                                type="text" 
-                                                placeholder="Tempat" 
-                                                className="flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91]" 
-                                                value={data.pob} 
-                                                onChange={e => setData('pob', e.target.value)}
-                                            />
-                                            <input 
-                                                type="date" 
-                                                className="flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91]" 
-                                                value={data.birth_date} 
-                                                onChange={e => setData('birth_date', e.target.value)}
-                                            />
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <div className="flex items-center gap-4">
+                                                <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Tempat, Tanggal Lahir :</label>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Tempat" 
+                                                    className={`flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91] ${errors.pob ? 'ring-2 ring-red-500' : ''}`} 
+                                                    value={data.pob} 
+                                                    onChange={e => setData('pob', e.target.value)}
+                                                />
+                                                <input 
+                                                    type="date" 
+                                                    className={`flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91] ${errors.birth_date ? 'ring-2 ring-red-500' : ''}`} 
+                                                    value={data.birth_date} 
+                                                    onChange={e => setData('birth_date', e.target.value)}
+                                                />
+                                            </div>
+                                            {(errors.pob || errors.birth_date) && <span className="text-red-500 text-xs mt-1 ml-32 md:ml-44">{errors.pob || errors.birth_date}</span>}
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4">
-                                        <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Umur :</label>
-                                        <input 
-                                            type="number" 
-                                            className="w-20 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-center font-bold text-[#486284] focus:ring-2 focus:ring-[#566E91]" 
-                                            value={data.age} 
-                                            onChange={e => setData('age', e.target.value)}
-                                        />
-                                        <span className="text-xs font-bold text-[#486284]">Tahun</span>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-4">
+                                            <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Umur :</label>
+                                            <input 
+                                                type="number" 
+                                                className={`w-20 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-center font-bold text-[#486284] focus:ring-2 focus:ring-[#566E91] ${errors.age ? 'ring-2 ring-red-500' : ''}`} 
+                                                value={data.age} 
+                                                onChange={e => setData('age', e.target.value)}
+                                            />
+                                            <span className="text-xs font-bold text-[#486284]">Tahun</span>
+                                        </div>
+                                        {errors.age && <span className="text-red-500 text-xs mt-1 ml-32 md:ml-44">{errors.age}</span>}
                                     </div>
                                     <FormField 
                                         label="Alamat :" 
@@ -225,24 +232,30 @@ export default function Form({ auth, child }) {
                                         onChange={e => setData('school_address', e.target.value)}
                                         error={errors.school_address}
                                     />
-                                    <div className="flex gap-4">
-                                        <div className="flex-1 flex items-center gap-4">
-                                            <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Kelas :</label>
-                                            <input 
-                                                type="text" 
-                                                className="flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91]" 
-                                                value={data.class} 
-                                                onChange={e => setData('class', e.target.value)}
-                                            />
+                                    <div className="flex flex-col md:flex-row gap-4">
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <div className="flex items-center gap-4">
+                                                <label className="text-[#486284] font-bold text-xs w-28 md:w-40">Kelas :</label>
+                                                <input 
+                                                    type="text" 
+                                                    className={`flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91] ${errors.class ? 'ring-2 ring-red-500' : ''}`} 
+                                                    value={data.class} 
+                                                    onChange={e => setData('class', e.target.value)}
+                                                />
+                                            </div>
+                                            {errors.class && <span className="text-red-500 text-xs mt-1 ml-32 md:ml-44">{errors.class}</span>}
                                         </div>
-                                        <div className="flex-1 flex items-center gap-4">
-                                            <label className="text-[#486284] font-bold text-xs w-16">NIPD :</label>
-                                            <input 
-                                                type="text" 
-                                                className="flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91]" 
-                                                value={data.nipd} 
-                                                onChange={e => setData('nipd', e.target.value)}
-                                            />
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <div className="flex items-center gap-4">
+                                                <label className="text-[#486284] font-bold text-xs w-16">NIPD :</label>
+                                                <input 
+                                                    type="text" 
+                                                    className={`flex-1 bg-[#FDF1D6] border-none rounded-xl shadow-inner py-2 text-sm focus:ring-2 focus:ring-[#566E91] ${errors.nipd ? 'ring-2 ring-red-500' : ''}`} 
+                                                    value={data.nipd} 
+                                                    onChange={e => setData('nipd', e.target.value)}
+                                                />
+                                            </div>
+                                            {errors.nipd && <span className="text-red-500 text-xs mt-1 ml-20">{errors.nipd}</span>}
                                         </div>
                                     </div>
                                 </div>
@@ -273,15 +286,15 @@ export default function Form({ auth, child }) {
                             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-[2rem] border border-white/10 text-center md:text-right min-w-[250px]">
                                 <div className="text-white space-y-2">
                                     <div className="flex justify-between items-center md:justify-end md:gap-4">
-                                        <span className="text-xs font-bold uppercase opacity-80">Total Kehadiran</span>
-                                        <span className="text-2xl font-black text-[#FEF3D1] leading-none">-</span>
+                                        <span className="text-xs font-bold uppercase opacity-80">Total Kehadiran ({stats?.year || '-'})</span>
+                                        <span className="text-2xl font-black text-[#FEF3D1] leading-none">{stats?.total_hadir ?? '-'}</span>
                                     </div>
                                     <div className="flex justify-between items-center md:justify-end md:gap-4">
-                                        <span className="text-xs font-bold uppercase opacity-80">Persentase</span>
-                                        <span className="text-2xl font-black text-[#FEF3D1] leading-none">-%</span>
+                                        <span className="text-xs font-bold uppercase opacity-80">Persentase Tahunan</span>
+                                        <span className="text-2xl font-black text-[#FEF3D1] leading-none">{stats?.persentase !== undefined ? `${stats.persentase}%` : '-%'}</span>
                                     </div>
                                     <p className="text-[10px] italic opacity-60 mt-4 block border-t border-white/20 pt-2">
-                                        *Terisi otomatis via presensi mingguan
+                                        *Terisi otomatis via presensi mingguan tahun berjalan
                                     </p>
                                 </div>
                             </div>

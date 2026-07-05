@@ -22,7 +22,7 @@ export default function AdminLayout({ auth, children }) {
     return (
         <>
             {/* Navbar Admin */}
-            <nav className="flex justify-between items-center space-x-8 p-6 bg-[#F7CBCA] text-xs font-medium text-gray-600 relative">
+            <nav className="flex justify-between items-center space-x-8 p-6 bg-[#F7CBCA] text-xs font-medium text-gray-600 sticky top-0 z-50 print:hidden">
                 {/* Logo */}
                 <Link href="/dashboard" className="text-2xl font-black text-[#7A0000]">
                     SEGAR

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Child;
 use App\Models\User;
+use App\Models\LearningMaterial;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -83,9 +84,9 @@ class DashboardController extends Controller
             'next_week_material' => $admin->next_week_material ?? 'Belum ada materi pembelajaran yang di-publish.',
         ];
 
-        $topChildren = Child::select('id', 'name', 'group')->get()->map(function ($child) use ($start, $end) {
+        $topChildren = Child::select('id', 'name', 'group')->get()->map(function ($child) use ($yearStart, $yearEnd) {
             $hadir = Attendance::where('child_id', $child->id)
-                ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+                ->whereBetween('date', [$yearStart->toDateString(), $yearEnd->toDateString()])
                 ->where('is_present', true)
                 ->count();
 
@@ -119,6 +120,8 @@ class DashboardController extends Controller
                 'absen' => Attendance::where('child_id', $child->id)->whereBetween('date', [$start->toDateString(), $end->toDateString()])->where('is_present', false)->count(),
             ];
         });
+        $sundayDates = array_map(function($d) { return $d->toDateString(); }, $sundays);
+        $learningMaterials = LearningMaterial::whereIn('date', $sundayDates)->get()->keyBy('date');
 
         return Inertia::render('Dashboard', [
             'stats'               => $stats,
@@ -133,26 +136,26 @@ class DashboardController extends Controller
             'selectedMonthStats'  => $selectedMonthStats,
             'selectedYearStats'   => $selectedYearStats,
             'topChildren'         => $topChildren,
+            'learningMaterials'   => $learningMaterials,
+            'sundays'             => $sundayDates,
         ]);
     }
 
     public function updateMaterial(Request $request)
     {
         $request->validate([
-            'next_week_material' => 'required|string|max:1000',
+            'materials' => 'required|array',
+            'materials.*.date' => 'required|date',
+            'materials.*.content' => 'nullable|string|max:1000',
         ]);
 
-        // Selalu cari user dengan role 'admin'
-        $admin = User::where('role', 'admin')->first();
-
-        if ($admin) {
-            $admin->update([
-                'next_week_material' => $request->next_week_material
-            ]);
-            
-            return back()->with('success', 'Materi minggu depan berhasil dipublikasikan!');
+        foreach ($request->materials as $mat) {
+            LearningMaterial::updateOrCreate(
+                ['date' => $mat['date']],
+                ['content' => $mat['content']]
+            );
         }
-
-        return back()->withErrors(['error' => 'Gagal menemukan akun pengajar.']);
+            
+        return back()->with('success', 'Materi pembelajaran berhasil dipublikasikan!');
     }
 }

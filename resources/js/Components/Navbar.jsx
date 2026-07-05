@@ -26,7 +26,7 @@ export default function Navbar() {
     const navBgColor = isAdmin ? 'bg-[#F7CBCA]' : 'bg-[#FEF3D1]';
 
     return (
-        <nav className={`flex justify-between items-center p-6 text-xs text-gray-600 ${navBgColor} relative`}>
+        <nav className={`flex justify-between items-center p-6 text-xs text-gray-600 ${navBgColor} sticky top-0 z-50`}>
             {/* KIRI: Logo SEGAR */}
             <div>
                 <Link href="/" className="text-2xl font-black text-[#7A0000] tracking-tighter">

@@ -50,23 +50,28 @@ export default function AdminIndex({ auth, children = [] }) {
                 <div className="max-w-6xl mx-auto px-6 py-10">
                     
                     {/* Search Bar & Add Button */}
-                    <div className="flex items-center justify-center space-x-4 mb-10">
-                        <div className="relative w-full max-w-xl">
+                    <div className="flex flex-col sm:flex-row items-center justify-between w-full max-w-4xl mx-auto mb-12 gap-4">
+                        <div className="relative w-full">
+                            <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </div>
                             <input 
                                 type="text" 
-                                placeholder="Cari nama anak..." 
+                                placeholder="Cari profil anak..." 
                                 value={searchTerm}
                                 onChange={handleSearchChange}
-                                className="w-full py-3 px-6 rounded-full border-none italic shadow-inner text-gray-600 bg-[#FEFBF5] focus:ring-2 focus:ring-[#566E91]"
+                                className="w-full py-4 pl-14 pr-6 rounded-[2rem] border border-gray-100 bg-[#FEFBF5] text-gray-700 font-medium shadow-sm focus:ring-2 focus:ring-[#566E91] transition-all focus:outline-none"
                             />
-                            <span className="absolute right-5 top-3 text-gray-400 text-lg">🔍</span>
                         </div>
                         <Link 
                             href="/admin/profile/create" 
-                            className="w-12 h-12 bg-[#720107] border-2 border-[#FEF3D1] rounded-full flex items-center justify-center text-[#FEF3D1] text-2xl font-bold shadow-lg hover:scale-110 transition duration-200 focus:outline-none"
+                            className="flex-shrink-0 flex items-center gap-2 bg-[#FEF3D1] text-[#720107] font-black text-sm uppercase tracking-wider py-4 px-8 rounded-[2rem] shadow-sm hover:shadow-md hover:bg-white transition-all transform hover:-translate-y-0.5 focus:outline-none"
                             title="Tambah Profil Anak Baru"
                         >
-                            +
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                            Tambah Data
                         </Link>
                     </div>
 

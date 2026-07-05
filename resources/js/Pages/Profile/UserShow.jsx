@@ -84,15 +84,15 @@ export default function UserShow({ auth, child, stats }) {
                             <div className="bg-white/10 backdrop-blur-sm p-6 rounded-[2rem] border border-white/10 text-center md:text-right min-w-[250px]">
                                 <div className="text-white space-y-2">
                                     <div className="flex justify-between items-center md:justify-end md:gap-4">
-                                        <span className="text-xs font-bold uppercase opacity-80">Total Kehadiran</span>
+                                        <span className="text-xs font-bold uppercase opacity-80">Total Kehadiran ({stats.year})</span>
                                         <span className="text-2xl font-black text-[#FEF3D1] leading-none">{stats.total_hadir} Kali</span>
                                     </div>
                                     <div className="flex justify-between items-center md:justify-end md:gap-4">
-                                        <span className="text-xs font-bold uppercase opacity-80">Persentase</span>
+                                        <span className="text-xs font-bold uppercase opacity-80">Persentase Tahunan</span>
                                         <span className="text-2xl font-black text-[#FEF3D1] leading-none">{stats.persentase}</span>
                                     </div>
                                     <p className="text-[10px] italic opacity-60 mt-4 block border-t border-white/20 pt-2">
-                                        *Terisi otomatis via presensi mingguan
+                                        *Terisi otomatis via presensi mingguan tahun berjalan
                                     </p>
                                 </div>
                             </div>

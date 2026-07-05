@@ -66,7 +66,22 @@ class ProfileController extends Controller
     public function edit($id)
     {
         $child = Child::findOrFail($id);
-        return Inertia::render('Profile/Form', ['child' => $child]);
+
+        $currentYear = \Carbon\Carbon::now()->year;
+        $attendances = Attendance::where('child_id', $id)->whereYear('date', $currentYear)->get();
+        $totalHadir = $attendances->where('is_present', true)->count();
+        $totalPertemuan = $attendances->count();
+        $persentase = $totalPertemuan > 0 ? round(($totalHadir / $totalPertemuan) * 100) : 0;
+
+        return Inertia::render('Profile/Form', [
+            'child' => $child,
+            'stats' => [
+                'total_hadir' => $totalHadir,
+                'total_pertemuan' => $totalPertemuan,
+                'persentase' => $persentase,
+                'year' => $currentYear,
+            ]
+        ]);
     }
 
     // Memproses Update Data Anak (Admin)
@@ -108,7 +123,8 @@ class ProfileController extends Controller
     {
         $child = Child::findOrFail($id);
 
-        $attendances = Attendance::where('child_id', $id)->get();
+        $currentYear = \Carbon\Carbon::now()->year;
+        $attendances = Attendance::where('child_id', $id)->whereYear('date', $currentYear)->get();
         $totalHadir = $attendances->where('is_present', true)->count();
         $totalPertemuan = $attendances->count();
         $persentase = $totalPertemuan > 0 ? round(($totalHadir / $totalPertemuan) * 100) . '%' : '0%';
@@ -119,6 +135,7 @@ class ProfileController extends Controller
                 'total_hadir' => $totalHadir,
                 'total_pertemuan' => $totalPertemuan,
                 'persentase' => $persentase,
+                'year' => $currentYear,
             ]
         ]);
     }

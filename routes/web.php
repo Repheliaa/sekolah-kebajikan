@@ -11,9 +11,14 @@ use App\Models\Attendance;
 
 // ==================== 1. HALAMAN UMUM / GUEST ====================
 Route::get('/', function (Illuminate\Http\Request $request) {
-    // Ambil materi dari admin user
-    $admin = \App\Models\User::where('role', 'admin')->first();
-    $material = ($admin && $admin->next_week_material) ? $admin->next_week_material : 'Belum ada fokus pembelajaran minggu ini.';
+    // Ambil materi mendatang yang paling dekat dengan hari ini
+    $today = \Carbon\Carbon::now()->toDateString();
+    $materialRecord = \App\Models\LearningMaterial::where('date', '>=', $today)
+                        ->whereNotNull('content')
+                        ->where('content', '!=', '')
+                        ->orderBy('date', 'asc')
+                        ->first();
+    $material = $materialRecord ? $materialRecord->content : 'Belum ada materi pembelajaran yang dipublikasikan.';
 
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -38,8 +43,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/presensi', function (Request $request) {
         $students = Child::orderBy('name', 'asc')->get(['id', 'name', 'group']);
 
-        // Ambil tanggal dari query. Jika tidak ada, gunakan hari ini.
-        $dateParam = $request->query('date', date('Y-m-d'));
+        // Ambil tanggal dari query. Jika tidak ada, gunakan hari minggu terdekat
+        $dateParam = $request->query('date');
+        if (!$dateParam) {
+            $now = \Carbon\Carbon::now();
+            $dateParam = $now->isSunday() ? $now->format('Y-m-d') : $now->next(\Carbon\Carbon::SUNDAY)->format('Y-m-d');
+        }
 
         // Ambil bulan dari query. Jika tidak ada, ambil dari tanggal terpilih.
         $monthParam = $request->query('month', substr($dateParam, 0, 7));
@@ -49,18 +58,32 @@ Route::middleware(['auth'])->group(function () {
             $existingAttendances = Attendance::whereDate('date', $dateParam)
                 ->get(['child_id', 'is_present', 'note']);
 
+            $learningMaterial = \App\Models\LearningMaterial::whereDate('date', $dateParam)->first();
+
             return Inertia::render('Presence', [
                 'students' => $students,
                 'selectedDate' => $dateParam,
                 'selectedMonth' => $monthParam,
                 'existingAttendances' => $existingAttendances,
+                'learningMaterial' => $learningMaterial ? $learningMaterial->content : null,
             ]);
         }
 
         // JIKA LOGIN SEBAGAI USER / ORANG TUA
+        $user = $request->user();
+        $userStudents = Child::where('mother_name', $user->name)
+            ->orWhere('father_name', $user->name)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'group']);
+            
+        $studentIds = $userStudents->pluck('id');
+
         return Inertia::render('UserPresence', [
-            'students' => $students,
-            'historyAttendances' => Attendance::orderBy('date', 'desc')->get(),
+            'students' => $userStudents,
+            'historyAttendances' => Attendance::whereIn('child_id', $studentIds)
+                ->orderBy('date', 'desc')
+                ->get(),
+            'learningMaterials' => \App\Models\LearningMaterial::all(),
         ]);
     })->name('presensi');
 
@@ -96,6 +119,18 @@ Route::middleware(['auth'])->group(function () {
         ])->with('success', 'Data presensi berhasil disimpan.');
     })->name('presensi.store');
 
+    Route::delete('/presensi/{date}', function (Request $request, $date) {
+        if ($request->user()->role !== 'admin') {
+            abort(403, 'Hanya admin yang dapat menghapus data presensi.');
+        }
+
+        Attendance::whereDate('date', $date)->delete();
+
+        return redirect()->route('presensi', [
+            'month' => substr($date, 0, 7),
+        ])->with('success', 'Seluruh data presensi pada tanggal tersebut berhasil dihapus.');
+    })->name('presensi.destroy');
+
     // ------------------ FITUR MANAJEMEN PROFIL ANAK ------------------
     
     // RUTE KHUSUS ADMIN (Kelola, Edit, Tambah, Hapus Profil Anak)
@@ -109,7 +144,7 @@ Route::middleware(['auth'])->group(function () {
         
         // Mengarah ke form edit & update data anak
         Route::get('/profile/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::put('/profile/{id}', [ProfileController::class, 'updateChild'])->name('profile.update');
+        Route::post('/profile/{id}', [ProfileController::class, 'updateChild'])->name('profile.update');
         
         // Mengarah ke fungsi hapus data anak
         Route::delete('/profile/{id}', [ProfileController::class, 'destroy'])->name('profile.destroy');
