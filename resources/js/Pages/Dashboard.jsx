@@ -389,7 +389,7 @@ export default function Dashboard({
                         
                         <div className="flex justify-between mb-6 text-sm font-bold text-black">
                             <div>
-                                <p>Total Siswa Aktif: {stats?.total_anak || 0} Anak</p>
+                                <p>Total Aktif: {stats?.total_anak || 0} Anak</p>
                                 <p>Rincian: Kel. A ({stats?.kelompok_a || 0}), Kel. B ({stats?.kelompok_b || 0}), Kel. C ({stats?.kelompok_c || 0})</p>
                             </div>
                             <div className="text-right">

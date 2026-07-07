@@ -12,25 +12,20 @@ return new class extends Migration
     public function up(): void
 {
     Schema::create('users', function (Blueprint $table) {
-        $table->id();
-        $table->string('name'); // Nama Lengkap
-        $table->string('username')->unique(); // Untuk Login sesuai desain
-        $table->string('password');
+        $table->unsignedSmallInteger('id')->autoIncrement()->primary();
+        $table->string('name', 100); // Nama Lengkap
+        $table->string('username', 25)->unique(); // Untuk Login sesuai desain
+        $table->string('password', 60);
         $table->enum('role', ['admin', 'user'])->default('user'); // Menggunakan Enum lebih aman dan cepat
         $table->rememberToken();
         $table->timestamps(); // Mencatat created_at & updated_at secara otomatis
     });
 
-    Schema::create('password_reset_tokens', function (Blueprint $table) {
-        $table->string('username')->primary(); // Kita ganti ke username agar konsisten
-        $table->string('token');
-        $table->timestamp('created_at')->nullable();
-    });
 
     // Opsional: Aktifkan jika kamu mengatur SESSION_DRIVER=database di .env
     Schema::create('sessions', function (Blueprint $table) {
         $table->string('id')->primary();
-        $table->foreignId('user_id')->nullable()->index();
+        $table->unsignedSmallInteger('user_id')->nullable()->index();
         $table->string('ip_address', 45)->nullable();
         $table->text('user_agent')->nullable();
         $table->longText('payload');
@@ -44,7 +39,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
 };

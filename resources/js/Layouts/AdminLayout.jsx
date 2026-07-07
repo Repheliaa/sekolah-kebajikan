@@ -24,8 +24,8 @@ export default function AdminLayout({ auth, children }) {
             {/* Navbar Admin */}
             <nav className="flex justify-between items-center space-x-8 p-6 bg-[#F7CBCA] text-xs font-medium text-gray-600 sticky top-0 z-50 print:hidden">
                 {/* Logo */}
-                <Link href="/dashboard" className="text-2xl font-black text-[#7A0000]">
-                    SEGAR
+                <Link href="/">
+                    <img src="/images/asm.png" alt="Logo ASM" className="h-12 object-contain scale-110 origin-left" />
                 </Link>
 
                 {/* Menu Links */}

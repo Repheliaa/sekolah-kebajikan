@@ -29,8 +29,8 @@ export default function Navbar() {
         <nav className={`flex justify-between items-center p-6 text-xs text-gray-600 ${navBgColor} sticky top-0 z-50`}>
             {/* KIRI: Logo SEGAR */}
             <div>
-                <Link href="/" className="text-2xl font-black text-[#7A0000] tracking-tighter">
-                    SEGAR
+                <Link href="/">
+                    <img src="/images/asm.png" alt="Logo ASM" className="h-14 object-contain scale-110 origin-left" />
                 </Link>
             </div>
 
@@ -64,7 +64,7 @@ export default function Navbar() {
             {/* KANAN: Profile Button */}
             {user && (
                 <div className="relative ml-2">
-                    <button 
+                    <button
                         onClick={() => setShowMenu(!showMenu)}
                         className="w-10 h-10 bg-[#566E91] rounded-full border-2 border-white flex items-center justify-center text-white font-bold shadow-sm hover:scale-105 transition focus:outline-none"
                     >
@@ -77,7 +77,7 @@ export default function Navbar() {
                                 <p className="text-[10px] text-gray-400 uppercase font-bold">Nama Pengguna</p>
                                 <p className="text-sm font-black text-[#486284] truncate">{user.name}</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={handleLogout}
                                 className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 font-bold transition"
                             >

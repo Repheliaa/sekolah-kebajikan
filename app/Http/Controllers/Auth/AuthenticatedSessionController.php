@@ -19,7 +19,6 @@ class AuthenticatedSessionController extends Controller
     public function create(): Response
     {
         return Inertia::render('Auth/Login', [
-            'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
         ]);
     }
@@ -38,8 +37,8 @@ class AuthenticatedSessionController extends Controller
             return redirect('/dashboard'); 
         }
 
-        // PERBAIKAN: Paksa user biasa langsung ke rute home terluar atau profile
-        return redirect('/profile'); 
+        // PERBAIKAN: Paksa user biasa langsung ke rute home terluar
+        return redirect('/'); 
     }
 
     /**

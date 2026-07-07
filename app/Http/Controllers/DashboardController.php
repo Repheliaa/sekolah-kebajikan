@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Child;
-use App\Models\User;
 use App\Models\LearningMaterial;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -57,7 +56,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $admin = User::where('role', 'admin')->first();
+
 
         $selectedDateStats = [
             'hadir' => Attendance::whereDate('date', $selectedDate)->where('is_present', true)->count(),
@@ -75,13 +74,12 @@ class DashboardController extends Controller
         ];
 
         $stats = [
-            'total_anak'         => Child::count(),
-            'kelompok_a'         => Child::where('group', 'A')->count(),
-            'kelompok_b'         => Child::where('group', 'B')->count(),
-            'kelompok_c'         => Child::where('group', 'C')->count(),
-            'hadir_hari_ini'     => $selectedDateStats['hadir'],
-            'tidak_hadir'        => $selectedDateStats['absen'],
-            'next_week_material' => $admin->next_week_material ?? 'Belum ada materi pembelajaran yang di-publish.',
+            'total_anak'     => Child::count(),
+            'kelompok_a'     => Child::where('group', 'A')->count(),
+            'kelompok_b'     => Child::where('group', 'B')->count(),
+            'kelompok_c'     => Child::where('group', 'C')->count(),
+            'hadir_hari_ini' => $selectedDateStats['hadir'],
+            'tidak_hadir'    => $selectedDateStats['absen'],
         ];
 
         $topChildren = Child::select('id', 'name', 'group')->get()->map(function ($child) use ($yearStart, $yearEnd) {

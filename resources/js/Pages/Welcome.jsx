@@ -31,7 +31,7 @@ export default function Welcome({ auth, nextWeekMaterial }) {
                     "SEGAR"
                 </h1>
                 <p className="mt-6 max-w-2xl mx-auto text-[#566E91] text-sm md:text-base leading-7 font-small">
-                    platform berbasis web yang memfasilitasi pengelolaan data anak, pencatatan kehadiran, pemantauan perkembangan, serta penyampaian informasi kepada orang tua secara terintegrasi
+                    Platform berbasis web yang memfasilitasi pengelolaan data anak, pencatatan kehadiran, pemantauan perkembangan, serta penyampaian informasi kepada orang tua secara terintegrasi
                 </p>
             </section>
 

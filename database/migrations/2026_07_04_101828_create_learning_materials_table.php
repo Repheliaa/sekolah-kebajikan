@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('learning_materials', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedSmallInteger('id')->autoIncrement()->primary();
             $table->date('date')->unique();
-            $table->text('content')->nullable();
+            $table->string('content', 150)->nullable();
             $table->timestamps();
         });
     }

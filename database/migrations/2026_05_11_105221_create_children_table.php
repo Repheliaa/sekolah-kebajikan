@@ -12,30 +12,31 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('children', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedSmallInteger('id')->autoIncrement()->primary();
             
             // --- Data Umum ---
-            $table->string('name');
-            $table->string('pob')->nullable();        // Tempat Lahir
+            $table->string('name', 100);
+            $table->string('pob', 25)->nullable();        // Tempat Lahir
             $table->date('birth_date');               // Tanggal Lahir
-            $table->integer('age');                   // Umur
-            $table->text('address')->nullable();      // Alamat Anak
+            $table->unsignedTinyInteger('age');       // Umur (Maks 255)
+            $table->string('address', 200)->nullable();      // Alamat Anak
             
             // --- Data Orang Tua ---
-            $table->string('mother_name')->nullable();
-            $table->string('father_name')->nullable();
-            $table->string('contact_number')->nullable(); // Nomor Kontak Orang Tua
+            $table->string('mother_name', 100)->nullable();
+            $table->string('father_name', 100)->nullable();
+            $table->string('contact_number', 15)->nullable(); // Nomor Kontak Orang Tua
             
             // --- Data Pendidikan ---
-            $table->string('school_name')->nullable();
-            $table->text('school_address')->nullable();
-            $table->string('class')->nullable();
-            $table->string('nipd')->nullable();
-            $table->string('group'); // Kelompok A, B, atau C (Logika otomatis)
+            $table->string('school_name', 50)->nullable();
+            $table->string('school_address', 150)->nullable();
+            $table->string('class', 5)->nullable();
+            $table->string('nipd', 20)->nullable();
+            $table->char('group', 1); // Kelompok A, B, atau C (Logika otomatis)
             
             // --- Media & Relasi ---
-            $table->string('photo')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->string('photo', 100)->nullable();
+            $table->unsignedSmallInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             
             $table->timestamps();
         });

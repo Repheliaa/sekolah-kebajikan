@@ -12,14 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attendances', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedMediumInteger('id')->autoIncrement()->primary();
             $table->date('date'); // Tanggal hari Minggu pelaksanaan presensi
             
             // Relasi ke tabel anak (sesuaikanconstrained ke 'children' sesuai model Child kamu)
-            $table->foreignId('child_id')->constrained('children')->onDelete('cascade'); 
+            $table->unsignedSmallInteger('child_id');
+            $table->foreign('child_id')->references('id')->on('children')->onDelete('cascade');
             
             $table->boolean('is_present')->default(true); // True = Hadir, False = Absen
-            $table->string('note')->nullable(); // Catatan capaian atau alasan absen (sakit/izin)
+            $table->text('note')->nullable(); // Catatan capaian atau alasan absen (sakit/izin)
             $table->timestamps();
         });
     }
