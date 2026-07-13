@@ -205,7 +205,6 @@ export default function Presence({ auth, students = [], selectedDate, selectedMo
                     </div>
                 </div>
 
-                {/* Info Materi Pembelajaran */}
                 <div className="w-full max-w-4xl mb-6">
                     <div className="bg-[#FEFBF5] p-5 rounded-2xl border border-gray-100 shadow-md flex gap-4 items-start">
                         <div className="bg-[#F8C8C8] p-3 rounded-full text-[#720107]">

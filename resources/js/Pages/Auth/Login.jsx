@@ -27,9 +27,9 @@ export default function Login() {
                     <div>
                         <label className="block text-xs font-bold text-[#566E91] uppercase mb-1 ml-1">Nama Pengguna</label>
                         <input
-                            type="text" // Ubah dari "email" ke "text"
+                            type="text" 
                             className="w-full px-4 py-3 rounded-xl bg-[#FEFBF5]-50 border-transparent focus:border-[#566E91] focus:bg-white focus:ring-0 text-sm transition"
-                            value={data.username} // Pastikan key-nya 'username'
+                            value={data.username}
                             onChange={(e) => setData('username', e.target.value)}
                             placeholder="masukkan username"
                             required

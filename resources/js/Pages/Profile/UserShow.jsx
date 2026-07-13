@@ -9,10 +9,8 @@ export default function UserShow({ auth, child, stats }) {
                 <Head title={`Profil ${child.name}`} />
                 
                 <div className="max-w-6xl mx-auto">
-                    {/* Main Container */}
                     <div className="bg-[#FEFBF5] rounded-[3.5rem] p-8 md:p-14 flex flex-col md:flex-row gap-12 border border-gray-100">
                         
-                        {/* Sisi Kiri: Foto */}
                         <div className="w-full md:w-1/3 flex flex-col">
                             <div className="w-full aspect-[3/4] bg-gray-200 rounded-[3rem] border-4 border-[#566E91] overflow-hidden shadow-md mb-8">
                                 <img 
@@ -29,7 +27,6 @@ export default function UserShow({ auth, child, stats }) {
                             </Link>
                         </div>
 
-                        {/* Sisi Kanan: Detail Fields (Read-Only Text) */}
                         <div className="flex-1 space-y-8">
                             {/* Data Umum */}
                             <section>

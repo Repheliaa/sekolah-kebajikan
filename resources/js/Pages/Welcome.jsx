@@ -19,11 +19,8 @@ export default function Welcome({ auth, nextWeekMaterial }) {
     return (
         <>
             <Head title="Beranda - SEGAR" />
-            
-            {/* Navigasi */}
             <Navbar auth={auth} />
 
-            {/* --- SECTION HERO --- */}
             <section className="bg-[#FEF3D1] pt-12 pb-16 px-4 text-center">
                 <h1 className="text-4xl md:text-6xl font-black text-[#7A0000] leading-tight max-w-4xl mx-auto">
                     SEKOLAH KEBAJIKAN<br />
@@ -56,19 +53,9 @@ export default function Welcome({ auth, nextWeekMaterial }) {
                 </section>
             )}
 
-            {/* --- SECTION QUOTE --- */}
             <section className="w-full bg-[#FEF3D1]">
-                
-                {/* 1. Gambar Gelombang Atas */}
                 <div className="w-full leading-[0]">
-                    <img 
-                        src="/images/wave-top.svg" 
-                        className="w-full h-auto" 
-                        alt="" 
-                    />
-                </div>
-
-                {/* 2. Area Teks dengan Background Pink Solid */}
+                    <img src="/images/wave-top.svg" className="w-full h-auto" alt="" /></div>
                 <div className="bg-[#F7CBCA] w-full py-8 md:py-12">
                     <div className="max-w-4xl mx-auto text-center px-6">
                         <p className="text-[#486284] text-lg md:text-2xl font-bold italic leading-relaxed">
@@ -79,16 +66,9 @@ export default function Welcome({ auth, nextWeekMaterial }) {
                         </p>
                     </div>
                 </div>
-
-                {/* 3. Gambar Gelombang Bawah */}
                 <div className="w-full bg-[#7A0000] leading-[0]">
-                    <img 
-                        src="/images/wave-bottom.svg" 
-                        className="w-full h-auto" 
-                        alt="" 
-                    />
+                    <img src="/images/wave-bottom.svg" className="w-full h-auto" alt="" />
                 </div>
-
             </section>
 
             {/* Gallery Section */}

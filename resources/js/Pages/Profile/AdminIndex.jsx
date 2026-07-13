@@ -3,39 +3,32 @@ import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 
 export default function AdminIndex({ auth, children = [] }) {
-    // 1. STATE UNTUK PENCARIAN & PAGINATION
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 12; // Batasan 12 profil anak per halaman
+    const itemsPerPage = 12; 
 
-    // 2. LOGIKA LIVE SEARCH
     const filteredChildren = children.filter(child =>
         child.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // 3. LOGIKA MATHEMATIKA PAGINATION
     const totalPages = Math.ceil(filteredChildren.length / itemsPerPage);
     const activePage = currentPage > totalPages ? 1 : currentPage;
 
     const indexOfLastItem = activePage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     
-    // Potong data anak hasil filter untuk halaman aktif saat ini
     const currentChildren = filteredChildren.slice(indexOfFirstItem, indexOfLastItem);
 
-    // Membuat nomor halaman dinamis secara otomatis [1, 2, 3, ...]
     const pageNumbers = [];
     for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
     }
 
-    // Reset ke halaman 1 saat admin mengetik di search bar
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
         setCurrentPage(1); 
     };
 
-    // Fungsi tambahan aksi hapus profil anak jika sewaktu-waktu dibutuhkan admin
     const handleDelete = (id, name) => {
         if (confirm(`Apakah Anda yakin ingin menghapus data profil dari ${name}?`)) {
             router.delete(route('admin.profile.destroy', id));
@@ -45,10 +38,8 @@ export default function AdminIndex({ auth, children = [] }) {
     return (
         <AdminLayout auth={auth}>
             <Head title="Kelola Profil Anak - Admin" />
-
             <div className="min-h-screen bg-[#7A0000]">
                 <div className="max-w-6xl mx-auto px-6 py-10">
-                    
                     {/* Search Bar & Add Button */}
                     <div className="flex flex-col sm:flex-row items-center justify-between w-full max-w-4xl mx-auto mb-12 gap-4">
                         <div className="relative w-full">
@@ -80,8 +71,6 @@ export default function AdminIndex({ auth, children = [] }) {
                         {currentChildren.length > 0 ? (
                             currentChildren.map((child) => (
                                 <div key={child.id} className="bg-[#FEF3D1] rounded-[2rem] overflow-hidden shadow-2xl relative group border border-gray-100 flex flex-col justify-between transition duration-200">
-                                    
-                                    {/* Tombol Edit Aksi Cepat (Muncul saat hover kartu) */}
                                     <Link 
                                         href={`/admin/profile/${child.id}/edit`} 
                                         className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-[#486284] text-lg shadow-md opacity-0 group-hover:opacity-100 transition duration-200 z-10 hover:bg-white hover:scale-105"

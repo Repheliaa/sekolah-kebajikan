@@ -24,10 +24,8 @@ export default function Form({ auth, child, stats }) {
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Set file ke form data
             setData('photo', file);
             
-            // Create preview dengan FileReader
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPhotoPreview(reader.result);
@@ -36,7 +34,6 @@ export default function Form({ auth, child, stats }) {
         }
     };
 
-    // Logika Otomatis Kelompok & Usia
     useEffect(() => {
         if (data.birth_date) {
             const birth = new Date(data.birth_date);
@@ -50,7 +47,6 @@ export default function Form({ auth, child, stats }) {
 
             setData(prev => ({ ...prev, age: calculatedAge }));
 
-            // Logika Kelompok: A(1-5), B(6-10), C(11-15)
             if (calculatedAge >= 1 && calculatedAge <= 5) {
                 setData('group', 'A');
             } else if (calculatedAge >= 6 && calculatedAge <= 10) {
@@ -93,10 +89,7 @@ export default function Form({ auth, child, stats }) {
                 
                 <div className="max-w-6xl mx-auto">
                     
-                    {/* Main Container */}
                     <div className="bg-[#FEFBF5] rounded-[3.5rem] overflow-hidden p-8 md:p-14 flex flex-col md:flex-row gap-12 border border-gray-100">
-                        
-                        {/* Sisi Kiri: Foto & Tombol Simpan */}
                         <div className="w-full md:w-1/3 flex flex-col">
                             <div 
                                 className="w-full aspect-[3/4] bg-[#D1D5DB] rounded-[3rem] border-4 border-dashed border-gray-400 flex flex-col items-center justify-center text-gray-500 mb-8 relative overflow-hidden group cursor-pointer hover:bg-gray-400 hover:brightness-90 transition-all"
@@ -137,8 +130,6 @@ export default function Form({ auth, child, stats }) {
 
                         {/* Sisi Kanan: Form Fields */}
                         <div className="flex-1 space-y-8">
-                            
-                            {/* Data Umum */}
                             <section>
                                 <h3 className="text-[#720107] font-black text-sm uppercase mb-4 tracking-widest">Data Umum</h3>
                                 <div className="space-y-3">

@@ -102,7 +102,6 @@ export default function UserPresence({ auth, students = [], historyAttendances =
                     Riwayat Presensi Anak
                 </h1>
 
-                {/* Banner Pemberitahuan Terbaca */}
                 <div className="w-fit mx-auto mb-6 rounded-3xl bg-[#FEF3D1] px-8 py-4 text-center text-sm font-medium text-[#486284] border border-gray-200 shadow-sm">
                     Berikut adalah data kehadiran anak yang telah dicatat dan diperbarui oleh pengajar.
                 </div>
@@ -139,7 +138,6 @@ export default function UserPresence({ auth, students = [], historyAttendances =
                     </div>
                 </div>
 
-                {/* Materi Pembelajaran Bulan Ini */}
                 {activeMonthMaterials.length > 0 && (
                     <div className="w-full max-w-4xl mb-8">
                         <div className="bg-[#FEFBF5] p-6 rounded-[2.5rem] border border-gray-200 shadow-xl">

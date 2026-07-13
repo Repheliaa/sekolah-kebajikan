@@ -43,7 +43,6 @@ export default function Dashboard({
         e.preventDefault();
         post(route('dashboard.update-material'), {
             onSuccess: () => {
-                // Refresh halaman dashboard setelah materi berhasil tersimpan
                 router.visit(route('dashboard'), {
                     preserveScroll: true,
                 });
@@ -73,9 +72,9 @@ export default function Dashboard({
     const maxYearlyAttendance = Math.max(...yearlyChart.map(d => Math.max(d.Hadir, d.Absen)), 10);
 
     const categoryBreakdown = [
-        { label: 'Kelompok A', value: stats?.kelompok_a ?? 0, color: '#FEF3D1' }, // Krem
-        { label: 'Kelompok B', value: stats?.kelompok_b ?? 0, color: '#F8C8C8' }, // Pink Lembut
-        { label: 'Kelompok C', value: stats?.kelompok_c ?? 0, color: '#720107' }, // Merah Gelap
+        { label: 'Kelompok A', value: stats?.kelompok_a ?? 0, color: '#FEF3D1' }, 
+        { label: 'Kelompok B', value: stats?.kelompok_b ?? 0, color: '#F8C8C8' }, 
+        { label: 'Kelompok C', value: stats?.kelompok_c ?? 0, color: '#720107' }, 
     ];
 
     const totalCategoryChildren = categoryBreakdown.reduce((sum, item) => sum + item.value, 0);
@@ -123,7 +122,6 @@ export default function Dashboard({
         ? Math.round((monthlySummary.hadir / (monthlySummary.hadir + monthlySummary.absen)) * 100)
         : 0;
 
-    // Fungsi mencetak laporan kehadiran
     const handlePrintReport = () => {
         window.print();
     };
@@ -145,8 +143,6 @@ export default function Dashboard({
 
                 {/* Konten Utama */}
                 <div className="p-6 md:p-12 max-w-7xl mx-auto relative z-10 -mt-10 print:mt-0 print:p-4">
-
-                    {/* Ringkasan Header status */}
                     <div className="mt-4 mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-[#FEFBF5] p-6 rounded-3xl border border-gray-200 print:hidden">
                         <div>
                             <h2 className="text-[#486284] font-black text-xl uppercase tracking-tight">Dashboard Admin</h2>
@@ -212,18 +208,7 @@ export default function Dashboard({
                                     <svg viewBox="0 0 140 140" className="w-36 h-36 -rotate-90">
                                         <circle cx="70" cy="70" r="42" stroke="#FFFFFF" strokeOpacity="0.18" strokeWidth="18" fill="none" />
                                         {donutSegments.map((segment) => (
-                                            <circle
-                                                key={segment.label}
-                                                cx="70"
-                                                cy="70"
-                                                r="42"
-                                                stroke={segment.color}
-                                                strokeWidth="18"
-                                                fill="none"
-                                                strokeDasharray={`${segment.length} ${donutCircumference}`}
-                                                strokeDashoffset={segment.offset}
-                                                strokeLinecap="round"
-                                            />
+                                            <circle key={segment.label} cx="70" cy="70" r="42" stroke={segment.color} strokeWidth="18" fill="none" strokeDasharray={`${segment.length} ${donutCircumference}`} strokeDashoffset={segment.offset} strokeLinecap="round"/>
                                         ))}
                                     </svg>
                                 </div>
